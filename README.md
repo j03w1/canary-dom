@@ -2,7 +2,7 @@
 
 > A zero-dependency browser security engine that turns the Client DOM into an active defense honeypot. Detects malicious browser extensions, DOM-based XSS, credential scraping, and Magecart supply-chain attacks.
 
-[![Deploy to GitHub Pages](https://github.com/YOUR_USERNAME/canary-dom/actions/workflows/deploy.yml/badge.svg)](https://YOUR_USERNAME.github.io/canary-dom/)
+[![Deploy to GitHub Pages](https://github.com/YOUR_USERNAME/canary-dom/actions/workflows/deploy.yml/badge.svg)](https://j03w1.github.io/canary-dom/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![MITRE D3FEND](https://img.shields.io/badge/MITRE-D3FEND%20Decoy%20Object-green.svg)](https://d3fend.mitre.org/)
 
